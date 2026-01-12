@@ -1,27 +1,25 @@
 from django.contrib import admin
-from .models import Unidade, Sala, Status, Bem
+from .models import Categoria, Status, Unidade, Sala, Bem
 
-@admin.register(Unidade)
-class UnidadeAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "endereco")
-    search_fields = ("nome",)
-
-
-@admin.register(Sala)
-class SalaAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "unidade")
-    list_filter = ("unidade",)
-
+@admin.register(Categoria)
+class CategoriaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nome')
 
 @admin.register(Status)
 class StatusAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome")
+    list_display = ('id', 'nome')
 
+@admin.register(Unidade)
+class UnidadeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nome', 'codigo')
+
+@admin.register(Sala)
+class SalaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'nome', 'unidade')
 
 @admin.register(Bem)
 class BemAdmin(admin.ModelAdmin):
-    list_display = ("id", "nome", "tombo", "unidade", "sala", "status")
-    search_fields = ("nome", "tombo")
-    list_filter = ("unidade", "sala", "status")
-
-# Register your models here.
+    # Aqui usamos exatamente os nomes dos campos que estão no models.py
+    list_display = ('tombo', 'nome', 'categoria', 'status', 'unidade', 'sala')
+    list_filter = ('categoria', 'status', 'unidade')
+    search_fields = ('tombo', 'nome')
