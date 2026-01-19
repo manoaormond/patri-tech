@@ -11,66 +11,79 @@ from .serializers import (
     UnidadeSerializer, SalaSerializer
 )
 
-# --- LOGIN ---
+# --- LOGIN (A peça que estava faltando!) ---
 @extend_schema(tags=["Autenticação"])
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def api_login(request):
+    """Endpoint para autenticar o usuário no sistema."""
     username = request.data.get("username")
     password = request.data.get("password")
     user = authenticate(request, username=username, password=password)
+
     if user is not None:
         login(request, user)
         return JsonResponse({"detail": "Login realizado com sucesso"})
     return JsonResponse({"detail": "Credenciais inválidas"}, status=401)
 
-# --- BENS ---
-@extend_schema(tags=["Bens"])
-class BemListCreateView(generics.ListCreateAPIView):
-    queryset = Bem.objects.all()
-    serializer_class = BemSerializer
+# --- MIXIN DE PERMISSÕES ---
+class PatriTechPermissionsMixin:
     def get_permissions(self):
-        if self.request.method == "GET": return [AllowAny()]
+        if self.request.method == "GET":
+            return [AllowAny()]
         return [IsAuthenticated()]
-
-@extend_schema(tags=["Bens"])
-class BemDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Bem.objects.all()
-    serializer_class = BemSerializer
-    permission_classes = [IsAuthenticated]
 
 # --- CATEGORIAS ---
 @extend_schema(tags=["Categorias"])
-class CategoriaListCreateView(generics.ListCreateAPIView):
+class CategoriaListCreateView(PatriTechPermissionsMixin, generics.ListCreateAPIView):
     queryset = Categoria.objects.all()
     serializer_class = CategoriaSerializer
-    def get_permissions(self):
-        if self.request.method == "GET": return [AllowAny()]
-        return [IsAuthenticated()]
+
+@extend_schema(tags=["Categorias"])
+class CategoriaDetailView(PatriTechPermissionsMixin, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Categoria.objects.all()
+    serializer_class = CategoriaSerializer
 
 # --- STATUS ---
 @extend_schema(tags=["Status"])
-class StatusListCreateView(generics.ListCreateAPIView):
+class StatusListCreateView(PatriTechPermissionsMixin, generics.ListCreateAPIView):
     queryset = Status.objects.all()
     serializer_class = StatusSerializer
-    def get_permissions(self):
-        if self.request.method == "GET": return [AllowAny()]
-        return [IsAuthenticated()]
+
+@extend_schema(tags=["Status"])
+class StatusDetailView(PatriTechPermissionsMixin, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Status.objects.all()
+    serializer_class = StatusSerializer
 
 # --- UNIDADES ---
 @extend_schema(tags=["Unidades"])
-class UnidadeListCreateView(generics.ListCreateAPIView):
+class UnidadeListCreateView(PatriTechPermissionsMixin, generics.ListCreateAPIView):
     queryset = Unidade.objects.all()
     serializer_class = UnidadeSerializer
-    def get_permissions(self):
-        if self.request.method == "GET": return [AllowAny()]
-        return [IsAuthenticated()]
+
+@extend_schema(tags=["Unidades"])
+class UnidadeDetailView(PatriTechPermissionsMixin, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Unidade.objects.all()
+    serializer_class = UnidadeSerializer
 
 # --- SALAS ---
 @extend_schema(tags=["Salas"])
-class SalaListCreateView(generics.ListCreateAPIView):
+class SalaListCreateView(PatriTechPermissionsMixin, generics.ListCreateAPIView):
     queryset = Sala.objects.all()
     serializer_class = SalaSerializer
-    def get_permissions(self):
-        if self.request.method == "GET": return [AllowAny()]
-        return [IsAuthenticated()]
+
+@extend_schema(tags=["Salas"])
+class SalaDetailView(PatriTechPermissionsMixin, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Sala.objects.all()
+    serializer_class = SalaSerializer
+
+# --- BENS ---
+@extend_schema(tags=["Bens"])
+class BemListCreateView(PatriTechPermissionsMixin, generics.ListCreateAPIView):
+    queryset = Bem.objects.all()
+    serializer_class = BemSerializer
+
+@extend_schema(tags=["Bens"])
+class BemDetailView(PatriTechPermissionsMixin, generics.RetrieveUpdateDestroyAPIView):
+    queryset = Bem.objects.all()
+    serializer_class = BemSerializer
